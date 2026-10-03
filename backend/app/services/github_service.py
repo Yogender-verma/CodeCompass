@@ -9,12 +9,43 @@ from fastapi import HTTPException
 def _get_headers() -> Dict[str, str]:
     """
     Constructs HTTP headers for GitHub API requests.
-    Sends standard headers for unauthenticated public repository requests.
+    Reads GITHUB_TOKEN dynamically from the backend environment.
+    If GITHUB_TOKEN exists, sends: Authorization: Bearer <GITHUB_TOKEN>
+    If no token exists, sends standard headers for unauthenticated public repository requests.
     """
-    return {
+    token = os.getenv("GITHUB_TOKEN", "").strip()
+    if not token:
+        # Check if .env has it and load into environment
+        try:
+            from pathlib import Path
+            candidate_paths = [
+                Path(__file__).resolve().parent.parent.parent.parent / ".env",
+                Path(__file__).resolve().parent.parent.parent / ".env",
+                Path.cwd() / ".env",
+            ]
+            for env_path in candidate_paths:
+                if env_path.is_file():
+                    with open(env_path, "r", encoding="utf-8") as _f:
+                        for _line in _f:
+                            _line = _line.strip()
+                            if _line.startswith("GITHUB_TOKEN="):
+                                _val = _line.split("=", 1)[1].strip().strip("'\"")
+                                if _val:
+                                    token = _val
+                                    os.environ["GITHUB_TOKEN"] = token
+                                break
+                if token:
+                    break
+        except Exception:
+            pass
+
+    headers: Dict[str, str] = {
         "User-Agent": "CodeCompass-App/1.0",
         "Accept": "application/vnd.github.v3+json",
     }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
 
 
 def parse_github_url(url: str) -> Tuple[str, str]:

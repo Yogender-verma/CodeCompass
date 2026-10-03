@@ -7,14 +7,17 @@ _root_env = Path(__file__).resolve().parent.parent.parent / ".env"
 if _root_env.exists():
     try:
         from dotenv import load_dotenv
-        load_dotenv(dotenv_path=str(_root_env), override=True)
+        load_dotenv(dotenv_path=str(_root_env), override=False)
     except ImportError:
         with open(_root_env, "r", encoding="utf-8") as _f:
             for _line in _f:
                 _line = _line.strip()
                 if _line and not _line.startswith("#") and "=" in _line:
                     _k, _v = _line.split("=", 1)
-                    os.environ[_k.strip()] = _v.strip().strip("'\"")
+                    _key = _k.strip()
+                    _val = _v.strip().strip("'\"")
+                    if _key not in os.environ or not os.environ[_key]:
+                        os.environ[_key] = _val
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
