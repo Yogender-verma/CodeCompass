@@ -1,0 +1,1 @@
+"""CodeCompass Backend — Service Layer."""
