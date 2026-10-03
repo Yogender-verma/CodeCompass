@@ -145,16 +145,6 @@ Open `http://localhost:5173`
 - Optional GitHub username
 - Sign out
 
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/analyze` | Fetch GitHub repository data |
-| POST | `/api/analyze/ai` | AI-powered repository understanding |
-| POST | `/api/match-skills` | Match skills to opportunities |
-| POST | `/api/contribution-plan` | Generate contribution plan |
-| GET | `/api/ai/status` | Check AI configuration status |
-| GET | `/health` | Backend health check |
 
 ## AI Configuration
 
